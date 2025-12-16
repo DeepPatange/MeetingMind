@@ -61,15 +61,24 @@ export const GET = async (request: Request, { params }: { params: { id: string }
               heading: 'Heading2',
             }),
             new Paragraph(meeting.rawTranscript),
-            ...formatSection('Tasks', meeting.tasks.map((task: { task: any; owner: any; dueDate: any }) => `**Task:** ${task.task}\n**Owner:** ${task.owner}\n**Due Date:** ${task.dueDate}`)),
-            ...formatSection('Decisions', meeting.decisions.map((decision: { decision: any; date: any }) => `**Decision:** ${decision.decision}\n**Date:** ${decision.date}`)),
-            ...formatSection('Questions', meeting.questions.map((question: { question: any; status: any; answer: any }) => `**Question:** ${question.question}\n**Status:** ${question.status}\n**Answer:** ${question.answer || 'N/A'}`)),
-            ...formatSection('Insights', meeting.insights.map((insight: { insight: any; reference: any }) => `${insight.insight} (Reference: ${insight.reference})`)),
-            ...formatSection('Deadlines', meeting.deadlines.map((deadline: { description: any; dueDate: any }) => `**Description:** ${deadline.description}\n**Due Date:** ${deadline.dueDate}`)),
-            ...formatSection('Attendees', meeting.attendees.map((attendee: { name: any; role: any }) => `${attendee.name} (${attendee.role})`)),
-            ...formatSection('Follow-ups', meeting.followUps.map((followUp: { description: any; owner: any }) => `**Follow-up:** ${followUp.description}\n**Owner:** ${followUp.owner}`)),
-            ...formatSection('Risks', meeting.risks.map((risk: { risk: any; impact: any }) => `**Risk:** ${risk.risk}\n**Impact:** ${risk.impact}`)),
-            ...formatSection('Agenda', meeting.agenda.map((item: { item: any }) => `${item.item}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Tasks', meeting.tasks.map((task: any) => `**Task:** ${task.task}\n**Owner:** ${task.owner}\n**Due Date:** ${task.dueDate}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Decisions', meeting.decisions.map((decision: any) => `**Decision:** ${decision.decision}\n**Date:** ${decision.date}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Questions', meeting.questions.map((question: any) => `**Question:** ${question.question}\n**Status:** ${question.status}\n**Answer:** ${question.answer || 'N/A'}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Insights', meeting.insights.map((insight: any) => `${insight.insight} (Reference: ${insight.reference})`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Deadlines', meeting.deadlines.map((deadline: any) => `**Description:** ${deadline.description}\n**Due Date:** ${deadline.dueDate}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Attendees', meeting.attendees.map((attendee: any) => `${attendee.name} (${attendee.role})`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Follow-ups', meeting.followUps.map((followUp: any) => `**Follow-up:** ${followUp.description}\n**Owner:** ${followUp.owner}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Risks', meeting.risks.map((risk: any) => `**Risk:** ${risk.risk}\n**Impact:** ${risk.impact}`)),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ...formatSection('Agenda', meeting.agenda.map((item: any) => `${item.item}`)),
           ],
         },
       ],
@@ -78,14 +87,14 @@ export const GET = async (request: Request, { params }: { params: { id: string }
     const buffer = await Packer.toBuffer(doc)
     const fileName = `${meeting.name.replace(/\s+/g, '_')}_Details.docx`
 
-    return new NextResponse(buffer, {
+    return new NextResponse(buffer as BodyInit, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': `attachment; filename="${fileName}"`,
       },
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Failed to export meeting details.' }, { status: 500 })
   }

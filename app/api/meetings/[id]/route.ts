@@ -92,20 +92,29 @@ export const GET = async (request: NextRequest, { params }: { params: { id: stri
       transcript: meeting.rawTranscript,
       summary: meeting.summary,
       breakdown: {
-        Tasks: meeting.tasks.map((task: { task: any; owner: any; dueDate: any }) => ({ task: task.task, owner: task.owner, due_date: task.dueDate })),
-        Decisions: meeting.decisions.map((decision: { decision: any; date: any }) => ({ decision: decision.decision, date: decision.date })),
-        Questions: meeting.questions.map((question: { question: any; status: any; answer: any }) => ({ question: question.question, status: question.status, answer: question.answer })),
-        Insights: meeting.insights.map((insight: { insight: any; reference: any }) => ({ insight: insight.insight, reference: insight.reference })),
-        Deadlines: meeting.deadlines.map((deadline: { description: any; dueDate: any }) => ({ description: deadline.description, due_date: deadline.dueDate })),
-        Attendees: meeting.attendees.map((attendee: { name: any; role: any }) => ({ name: attendee.name, role: attendee.role })),
-        "Follow-ups": meeting.followUps.map((followUp: { description: any; owner: any }) => ({ description: followUp.description, owner: followUp.owner })),
-        Risks: meeting.risks.map((risk: { risk: any; impact: any }) => ({ risk: risk.risk, impact: risk.impact })),
-        Agenda: meeting.agenda.map((item: { item: any }) => ({ item: item.item })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Tasks: meeting.tasks.map((task: any) => ({ task: task.task, owner: task.owner, due_date: task.dueDate })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Decisions: meeting.decisions.map((decision: any) => ({ decision: decision.decision, date: decision.date })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Questions: meeting.questions.map((question: any) => ({ question: question.question, status: question.status, answer: question.answer })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Insights: meeting.insights.map((insight: any) => ({ insight: insight.insight, reference: insight.reference })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Deadlines: meeting.deadlines.map((deadline: any) => ({ description: deadline.description, due_date: deadline.dueDate })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Attendees: meeting.attendees.map((attendee: any) => ({ name: attendee.name, role: attendee.role })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "Follow-ups": meeting.followUps.map((followUp: any) => ({ description: followUp.description, owner: followUp.owner })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Risks: meeting.risks.map((risk: any) => ({ risk: risk.risk, impact: risk.impact })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Agenda: meeting.agenda.map((item: any) => ({ item: item.item })),
       },
     }
     console.log(formattedMeeting)
     return NextResponse.json(formattedMeeting, { status: 200 })
-  } catch (error: any) {
+  } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Failed to fetch meeting details.' }, { status: 500 })
   }

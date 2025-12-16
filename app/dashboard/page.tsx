@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import UploadAudio from '@/components/UploadAudio';
 import { useToast } from "@/hooks/use-toast"
 
@@ -46,6 +46,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchMeetings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleViewDetails = (meetingId: string) => {

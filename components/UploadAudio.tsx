@@ -84,6 +84,9 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
     setIsCompressing(true);
     try {
       await loadFFmpeg();
+      if (!ffmpeg) {
+        throw new Error('FFmpeg failed to initialize');
+      }
       await ffmpeg.writeFile('input_audio', await fetchFile(selectedFile));
 
       // Set target bitrate to reduce file size
@@ -101,6 +104,7 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
       ]);
 
       const data = await ffmpeg.readFile('output_audio.mp3');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const uint8Array = data instanceof Uint8Array ? data : new Uint8Array(data as any);
       const compressedBlob = new Blob([uint8Array], { type: 'audio/mpeg' });
       const compressed = new File([compressedBlob], `compressed_${selectedFile.name}`, {

@@ -4,6 +4,7 @@ import axios from 'axios'
 import fs from 'fs'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
+import type { AnalyzedMeetingData } from './types'
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -84,10 +85,10 @@ export const POST = async (request: NextRequest) => {
     console.log('Raw transcript:', rawTranscript.substring(0, 100) + '...')
 
     // Parse JSON strings
-    let analyzedData
+    let analyzedData: AnalyzedMeetingData
     try {
-      analyzedData = JSON.parse(analyzedTranscript)
-    } catch (parseError) {
+      analyzedData = JSON.parse(analyzedTranscript) as AnalyzedMeetingData
+    } catch {
       throw new Error('Failed to parse analyzed transcript JSON.')
     }
 
@@ -110,7 +111,9 @@ export const POST = async (request: NextRequest) => {
         summary: analyzedData['Summary'] || '',
         tasks: {
           create: (analyzedData['Tasks'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((task: any) => task && typeof task === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((task: any) => ({
               task: task.description || 'No task description',
               owner: task.owner || 'Unassigned',
@@ -119,15 +122,19 @@ export const POST = async (request: NextRequest) => {
         },
         decisions: {
           create: (analyzedData['Decisions'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((decision: any) => decision && typeof decision === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((decision: any) => ({
               decision: decision.description || 'No decision description',
-              date: decision.date ? formatDate(decision.date) : new Date().toISOString(),
+              date: decision.date ? formatDate(decision.date) || new Date().toISOString() : new Date().toISOString(),
             })),
         },
         questions: {
           create: (analyzedData['Questions'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((question: any) => question && typeof question === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((question: any) => ({
               question: question.question || 'No question',
               status: question.status || 'Unanswered',
@@ -136,7 +143,9 @@ export const POST = async (request: NextRequest) => {
         },
         insights: {
           create: (analyzedData['Insights'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((insight: any) => insight && typeof insight === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((insight: any) => ({
               insight: insight.insight || 'No insight',
               reference: insight.reference || '',
@@ -144,7 +153,9 @@ export const POST = async (request: NextRequest) => {
         },
         deadlines: {
           create: (analyzedData['Deadlines'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((deadline: any) => deadline && typeof deadline === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((deadline: any) => ({
               description: deadline.description || 'No deadline description',
               dueDate: deadline.date ? formatDate(deadline.date) : null,
@@ -152,7 +163,9 @@ export const POST = async (request: NextRequest) => {
         },
         attendees: {
           create: (analyzedData['Attendees'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((attendee: any) => attendee && typeof attendee === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((attendee: any) => ({
               name: attendee.name || 'Unnamed Attendee',
               role: attendee.role || 'No role specified',
@@ -160,7 +173,9 @@ export const POST = async (request: NextRequest) => {
         },
         followUps: {
           create: (analyzedData['Follow-ups'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((followUp: any) => followUp && typeof followUp === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((followUp: any) => ({
               description: followUp.description || 'No follow-up description',
               owner: followUp.owner || 'Unassigned',
@@ -168,7 +183,9 @@ export const POST = async (request: NextRequest) => {
         },
         risks: {
           create: (analyzedData['Risks'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((risk: any) => risk && typeof risk === 'object')
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .map((risk: any) => ({
               risk: risk.risk || 'No risk description',
               impact: risk.impact || 'No impact specified',
@@ -176,8 +193,10 @@ export const POST = async (request: NextRequest) => {
         },
         agenda: {
           create: (analyzedData['Agenda'] || [])
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((item: any) => item && typeof item === 'string')
-            .map((item: string) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .map((item: any) => ({
               item: item,
             })),
         },
@@ -198,7 +217,7 @@ export const POST = async (request: NextRequest) => {
     console.log('Meeting saved successfully:', meeting.id)
 
     return NextResponse.json(meeting, { status: 200 })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in /api/transcribe:', error)
     return NextResponse.json({ error: 'An error occurred during processing.' }, { status: 500 })
   }

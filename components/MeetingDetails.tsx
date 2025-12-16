@@ -21,10 +21,6 @@ import CategoryCard from "@/components/CategoryCard"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
 
-interface CategoryItem {
-  [key: string]: string
-}
-
 interface MeetingDetailsProps {
   data: {
     id: string
@@ -78,7 +74,7 @@ export default function MeetingDetails({ data }: MeetingDetailsProps) {
           description: "Meeting details exported successfully!",
         })
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(error)
       toast({
         title: "Error",

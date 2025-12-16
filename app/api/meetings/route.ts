@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export const GET = async () => {
@@ -80,7 +80,7 @@ export const GET = async () => {
     })
 
     return NextResponse.json(meetings, { status: 200 })
-  } catch (error: any) {
+  } catch (error) {
     console.error(error)
     return NextResponse.json({ error: 'Failed to fetch meetings.' }, { status: 500 })
   }
