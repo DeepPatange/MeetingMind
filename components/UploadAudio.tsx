@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast"
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 
-const ffmpeg = new FFmpeg();
+let ffmpeg: FFmpeg | null = null;
 
 interface MonitoredFile {
   name: string;
@@ -71,6 +71,9 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
   };
 
   const loadFFmpeg = async () => {
+    if (!ffmpeg) {
+      ffmpeg = new FFmpeg();
+    }
     if (!ffmpeg.loaded) {
       await ffmpeg.load();
     }
@@ -98,7 +101,8 @@ const UploadAudio: React.FC<{ onUploadSuccess: () => void }> = ({ onUploadSucces
       ]);
 
       const data = await ffmpeg.readFile('output_audio.mp3');
-      const compressedBlob = new Blob([data], { type: 'audio/mpeg' });
+      const uint8Array = data instanceof Uint8Array ? data : new Uint8Array(data as any);
+      const compressedBlob = new Blob([uint8Array], { type: 'audio/mpeg' });
       const compressed = new File([compressedBlob], `compressed_${selectedFile.name}`, {
         type: 'audio/mpeg',
       });
